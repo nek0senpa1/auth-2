@@ -3,6 +3,9 @@ const helmet = require('helmet');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 
+const sessiononey = require('express-session');
+const KnexSessionStoryTime = require('connect-session-knex')(sessiononey);
+
 const server = express();
 
 server.use(helmet());
@@ -17,6 +20,28 @@ const doublebee = knex(knexConfig.development);
 const Softy = require('./userstuff/softserver');
 
 
+const sessionConfigyPudding = {
+    name: 'taco',
+    secret: 'Stand by the grey stone when the thrush knocks',
+    cookie: {
+        maxAge: 525600,
+        secure: false,
+    },
+    httpOnly: true,
+    resave: false,
+    saveUninitialized: false,
+
+    store: new KnexSessionStoryTime ({
+        knex: doublebee,
+        tablename: "TheDownwardSpiral",
+        sidfieldname: 'Sesh',
+        createtable: true,
+        clearInterval: 525600 * 2
+
+    }),
+}
+
+server.use(sessiononey(sessionConfigyPudding));
 
 server.post('/api/newuser', (rec,rez) => {
     var newUser = rec.body;
