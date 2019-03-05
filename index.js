@@ -33,7 +33,7 @@ const sessionConfigyPudding = {
 
     store: new KnexSessionStoryTime ({
         knex: doublebee,
-        tablename: "TheDownwardSpiral",
+        tablename: "TheTabble",
         sidfieldname: 'Sesh',
         createtable: true,
         clearInterval: 525600 * 2
@@ -43,7 +43,7 @@ const sessionConfigyPudding = {
 
 server.use(sessiononey(sessionConfigyPudding));
 
-server.post('/api/newuser', (rec,rez) => {
+server.post('/api/register', (rec,rez) => {
     var newUser = rec.body;
 
     const hasher = bcrypt.hashSync(newUser.password, 8);
@@ -70,6 +70,7 @@ server.post('/api/login', (rec,rez) => {
 
     .then(user => {
         if (user && bcrypt.compareSync(password, user.password)) {
+            rec.session.user = user;
             rez.status(201).json({message: `Welcome ${user.name} ?|?|?`});
         } else {
             rez.status(402).json({message: "Invalid Login Attempt"})
@@ -80,24 +81,29 @@ server.post('/api/login', (rec,rez) => {
 
 // not real specific on how we want to do this, so... I'll do it like we did in class
 function allInTheFamily ( ma, pa, granny) {
-    const {username, password} = ma.headers
-    //console.log(ma.headers);
-    if( username && password) {
-        Softy.getBy({name: username}).first()
-        .then(paul => {
-            console.log('paul:', paul);
-            console.log(password)
-            if (paul && bcrypt.compareSync(password, paul.password)) {
-                granny();
-            } else {
-                pa.send('Nah... that ain\'t right user info... try again')
-            }
-        })
-        .catch(err => {
-            pa.send('You done did something wrong...')
-        })
+    // const {username, password} = ma.headers
+    // //console.log(ma.headers);
+    // if( username && password) {
+    //     Softy.getBy({name: username}).first()
+    //     .then(paul => {
+    //         console.log('paul:', paul);
+    //         console.log(password)
+    //         if (paul && bcrypt.compareSync(password, paul.password)) {
+    //             granny();
+    //         } else {
+    //             pa.send('Nah... that ain\'t right user info... try again')
+    //         }
+    //     })
+    //     .catch(err => {
+    //         pa.send('You done did something wrong...')
+    //     })
+    // } else {
+    //    pa.status(400).json({message: "No... No.  You did something very wrong"})
+    // }
+    if( ma.session && ma.session.user) {
+        granny();
     } else {
-       pa.status(400).json({message: "No... No.  You did something very wrong"})
+        pa.status(400).json({message: "No... No.  You did something very wrong"})
     }
 }
 
