@@ -103,7 +103,7 @@ function allInTheFamily ( ma, pa, granny) {
     if( ma.session && ma.session.user) {
         granny();
     } else {
-        pa.status(400).json({message: "No... No.  You did something very wrong"})
+        pa.status(400).json({message: "No... No.  You ain't logged in..."})
     }
 }
 
@@ -120,7 +120,16 @@ server.get('/api/users', allInTheFamily, (rec, rez) =>{
 })
 
 
-server.post('/api/users', )
+server.get('/api/logout', (wreck, rez) => {
+    if (wreck.session.user) {
+        wreck.session.destroy(theworld => {
+            console.log(theworld);
+            rez.send('Thank you for calling AT&T. Goodbye.')
+        })
+    } else {
+        rez.send('We lost one during the storm... you ain\'t even here... ');
+    }
+})
 
 
 server.get('/', (rec,rez) =>{
